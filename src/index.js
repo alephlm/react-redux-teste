@@ -1,12 +1,52 @@
+
 import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import * as serviceWorker from './serviceWorker';
+import { render } from 'react-dom';
+import { Provider } from 'react-redux'
+import { createStore } from 'redux';
+import {connect} from 'react-redux'
 
-ReactDOM.render(<App />, document.getElementById('root'));
+export class Teste extends React.Component {
+    alertar(){
+        alert('aaaa');
+    }
+    render() {
+        return (
+            <div>
+                <button onClick={() => this.props.alertar()}>test</button>
+            </div>
+        );
+    }
+}
+function reducer(state, action) {
+    switch (action.type) {
+      case 'ALERTA':
+        alert('ok');
+        break;
+      default:
+        return state
+    }
+  }
 
-// If you want your app to work offline and load faster, you can change
-// unregister() to register() below. Note this comes with some pitfalls.
-// Learn more about service workers: https://bit.ly/CRA-PWA
-serviceWorker.unregister();
+let store = createStore(reducer);
+
+const mapStateToProps = (state) => {
+    return {
+      state
+    }
+  };
+
+  const mapDispatchToProps = dispatch => {
+    return {
+      // dispatching plain actions
+      alertar: () => dispatch({ type: 'ALERTA' })
+    }
+  }
+  
+  export default connect(mapStateToProps, mapDispatchToProps)(Teste);
+
+render(
+    <Provider store={store}>
+      <Teste />
+    </Provider>,
+    document.getElementById('root')
+  );
