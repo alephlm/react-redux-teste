@@ -3,50 +3,58 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux'
 import { createStore } from 'redux';
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 
 export class Teste extends React.Component {
-    alertar(){
-        alert('aaaa');
-    }
-    render() {
-        return (
-            <div>
-                <button onClick={() => this.props.alertar()}>test</button>
-            </div>
-        );
-    }
-}
-function reducer(state, action) {
-    switch (action.type) {
-      case 'ALERTA':
-        alert('ok');
-        break;
-      default:
-        return state
-    }
+  render() {
+    return (
+      <div>
+        {this.props.state.nome}
+        <button onClick={() => this.props.alertar()}>test</button>
+      </div>
+    );
   }
+}
+
+function requestAPI() {
+  fetch("https://jsonplaceholder.typicode.com/todos/1")
+      .then(results => results.json())
+      .then(data => {
+        return data.title
+      })
+}
+
+function reducer(state = { nome: "abc" }, action) {
+  switch (action.type) {
+    case 'ALERTA':
+      state = {...state, nome: requestAPI()}
+      break;
+    default:
+      return state
+  }
+  return state;
+}
 
 let store = createStore(reducer);
 
 const mapStateToProps = (state) => {
-    return {
-      state
-    }
-  };
-
-  const mapDispatchToProps = dispatch => {
-    return {
-      // dispatching plain actions
-      alertar: () => dispatch({ type: 'ALERTA' })
-    }
+  return {
+    state
   }
-  
-  export default connect(mapStateToProps, mapDispatchToProps)(Teste);
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    // dispatching plain actions
+    alertar: () => dispatch({ type: 'ALERTA' })
+  }
+}
+
+const TestProvider = connect(mapStateToProps, mapDispatchToProps)(Teste);
 
 render(
-    <Provider store={store}>
-      <Teste />
-    </Provider>,
-    document.getElementById('root')
-  );
+  <Provider store={store}>
+    <TestProvider />
+  </Provider>,
+  document.getElementById('root')
+);
